@@ -83,9 +83,10 @@ class HuiShenghuo798:
         logger.info("开始执行签到...")
         
         try:
-            # 这里需要根据实际抓包获取的API进行调整
-            # 以下是示例API端点，需要替换为真实的接口
-            url = "https://api.example.com/checkin"  # 实际API地址
+            # 从配置文件读取API信息
+            api_base = self.config.get('api_base_url', 'https://api.example.com')
+            check_in_path = self.config.get('check_in_path', '/checkin')
+            url = f"{api_base}{check_in_path}"
             
             data = {
                 'phone': self.config.get('phone', ''),
@@ -121,8 +122,10 @@ class HuiShenghuo798:
         logger.info("查询当前积分...")
         
         try:
-            # 这里需要根据实际抓包获取的API进行调整
-            url = "https://api.example.com/points"  # 实际API地址
+            # 从配置文件读取API信息
+            api_base = self.config.get('api_base_url', 'https://api.example.com')
+            points_path = self.config.get('points_path', '/points')
+            url = f"{api_base}{points_path}"
             
             response = self.session.get(url, timeout=10)
             response.raise_for_status()

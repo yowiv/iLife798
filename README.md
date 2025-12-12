@@ -29,7 +29,10 @@ cp config.example.json config.json
 {
   "phone": "你的手机号",
   "token": "你的token（通过抓包获取）",
-  "user_agent": "你的User-Agent"
+  "user_agent": "你的User-Agent",
+  "api_base_url": "API基础地址（通过抓包获取）",
+  "check_in_path": "签到接口路径",
+  "points_path": "积分查询接口路径"
 }
 ```
 
@@ -39,7 +42,12 @@ cp config.example.json config.json
 2. 在手机/浏览器上登录慧生活798
 3. 进行一次签到操作
 4. 在抓包工具中找到签到请求
-5. 复制请求中的 token 和其他必要参数
+5. 复制以下信息到 config.json：
+   - **token**: 请求头中的授权token
+   - **api_base_url**: API的基础地址（如 https://api.example.com）
+   - **check_in_path**: 签到接口的路径（如 /api/v1/checkin）
+   - **points_path**: 积分查询接口的路径（如 /api/v1/points）
+   - **user_agent**: 请求头中的User-Agent
 
 ## 使用方法
 
@@ -60,7 +68,7 @@ crontab -e
 添加以下内容：
 
 ```
-0 8 * * * cd /path/to/-798 && python check_in.py
+0 8 * * * cd /path/to/huishenghuo-798 && python check_in.py
 ```
 
 ### Windows (使用任务计划程序)
