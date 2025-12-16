@@ -53,15 +53,16 @@ class HuiLife798:
             'content-type': "application/json; charset=UTF-8"
         }
     
-    def _send_request(self, endpoint, method='POST', payload=None, retry_on_frequent=True):
+    def _send_request(self, endpoint, method='POST', payload=None, retry_on_frequent=True, custom_headers=None):
         """发送HTTP请求"""
         url = f"{self. base_url}/{endpoint}"
+        headers = custom_headers if custom_headers else self.headers
         
         try:
             if method. upper() == 'POST':
-                response = requests.post(url, data=json.dumps(payload), headers=self.headers)
+                response = requests.post(url, data=json.dumps(payload), headers=headers)
             else:
-                response = requests.get(url, headers=self. headers)
+                response = requests.get(url, headers=headers)
             
             if endpoint == "mission-lst" and response.status_code == 200:
                 try:
@@ -80,9 +81,9 @@ class HuiLife798:
                         print("   ⚠️  请求过于频繁，等待5秒后重试...")
                         time. sleep(5)
                         if method.upper() == 'POST':
-                            response = requests.post(url, data=json.dumps(payload), headers=self.headers)
+                            response = requests.post(url, data=json.dumps(payload), headers=headers)
                         else:
-                            response = requests.get(url, headers=self.headers)
+                            response = requests.get(url, headers=headers)
                         print(f"   🔄 重试响应: {response. text}")
                 except json. JSONDecodeError: 
                     pass
@@ -212,6 +213,60 @@ class HuiLife798:
         print(f"✅ 观看视频完成，成功次数: {success_count}/{max_count}")
         print()
     
+    def watch_videos_tiny(self, max_count=5):
+        """观看支付宝小程序视频获取积分"""
+        print("=" * 60)
+        print("📱 开始观看支付宝小程序视频获取积分")
+        print("=" * 60)
+        
+        # 支付宝小程序专用 headers
+        tiny_headers = {
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 11; RMX3031 Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/105.0.5195.148 MYWeb/0.11.0.250403165244 UWS/3.22.2.9999 UCBS/3.22.2.9999_220000000000 Mobile Safari/537.36 NebulaSDK/1.8.100112 Nebula AlipayDefined(nt:WIFI,ws:360|0|3.0) AliApp(AP/10.7.20.8000) AlipayClient/10.7.20.8000 Language/zh-Hans isConcaveScreen/true Region/CNAriver/1.0.0 ChannelId(7) DTN/2.0',
+            'Accept-Encoding': 'gzip',
+            'Content-Type': 'application/json',
+            'accept-charset': 'UTF-8',
+            'referer': 'https://2019061465519660.hybrid.alipay-eco.com/2019061465519660/0.2.2512111152.32/index.html#pages/index/index',
+            'versioncode': '2.0.83',
+            'x-release-type': 'ONLINE',
+            'applicationtype': '1,5',
+            'alipayminimark': 'Q81flLfEY0rWCRguKpNqTklzQ6hJhmSZc/BjrOPYttlrrnCAqKrSHasEp9XH4DFU+KxP+j8xj2EAwU7YDKG5Bj9VWvxxV3XRN95AL7hIPwk=',
+            'authorization': self.authorization
+        }
+        
+        success_count = 0
+        
+        for i in range(1, max_count + 1):
+            payload = {
+                "adId": "ad_tiny_2019061465519660_202402222200083035",
+                "type": 101
+            }
+            
+            print(f"🎬 第{i}次观看支付宝小程序视频")
+            response = self._send_request("score-send", payload=payload, custom_headers=tiny_headers)
+            
+            if response: 
+                print(f"   响应:  {response.text}")
+                try: 
+                    resp_data = response.json()
+                    if resp_data.get('code') == 0:
+                        success_count += 1
+                        print("   ✅ 观看视频成功")
+                    else:
+                        print(f"   ❌ 观看视频失败: {resp_data.get('msg', '未知错误')}")
+                except json.JSONDecodeError: 
+                    if response.status_code == 200:
+                        success_count += 1
+                        print("   ✅ 观看视频成功")
+            
+            print("-" * 40)
+            
+            if i < max_count: 
+                print("⏳ 等待5秒...")
+                time.sleep(5)
+        
+        print(f"✅ 观看支付宝小程序视频完成，成功次数: {success_count}/{max_count}")
+        print()
+    
     def run_daily_tasks(self):
         """执行每日任务"""
         print("🌅 执行每日任务")
@@ -225,6 +280,13 @@ class HuiLife798:
         time.sleep(10)
         
         self.watch_videos(max_count=5)
+        
+        # 添加支付宝小程序视频观看
+        print("⏳ 等待10秒后开始观看支付宝小程序视频...")
+        time.sleep(10)
+        
+        self.watch_videos_tiny(max_count=5)
+        
         print("🎉 每日任务执行完成！")
 
 
