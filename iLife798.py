@@ -203,6 +203,7 @@ class HuiLife798:
                 except json.JSONDecodeError: 
                     if response.status_code == 200:
                         success_count += 1
+                        print("   ✅ 观看视频成功")
             
             print("-" * 40)
             
